@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pocket P&L</title>
+<title>Pocket P&L · ppnl-build-2026-02-14-nyc-3</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -79,7 +79,7 @@ body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(
 .chip.ylw-chip:hover,.chip.ylw-chip.active{border-color:var(--yellow);color:var(--yellow);background:rgba(255,228,77,.12);}
 .chip.vlt-chip:hover,.chip.vlt-chip.active{border-color:var(--violet);color:var(--violet);background:rgba(184,120,255,.12);}
 .chip-sep{width:1px;height:20px;background:var(--border2);flex-shrink:0;margin:0 2px}
-.srch{padding:5px 13px;font-size:11px;background:var(--panel);border:1px solid var(--border);border-radius:20px;color:var(--text);outline:none;width:130px;font-family:var(--fm);transition:all .15s;-webkit-appearance:none}
+.srch{padding:5px 13px;font-size:11px;background:var(--panel);border:1px solid var(--border);border-radius:20px;color:var(--text);outline:none;width:130px;font-family:var(--fm);transition:all .15s}
 .srch:focus{border-color:var(--blue);width:155px}
 .srch::placeholder{color:var(--dim)}
 .rc{font-size:9px;font-family:var(--fs);color:var(--dim);white-space:nowrap;margin-left:auto}
@@ -142,30 +142,6 @@ tfoot td:first-child{text-align:left}
   color:var(--red);
 }
 
-/* ADD ROW */
-.add-row-tr td{
-  background:rgba(45,184,232,.04);
-  border-top:1px dashed rgba(45,184,232,.25);
-}
-.add-btn{
-  padding:6px 14px;
-  font-size:9px;
-  font-family:var(--fs);
-  font-weight:800;
-  letter-spacing:.8px;
-  text-transform:uppercase;
-  border-radius:999px;
-  border:1px solid rgba(34,212,122,.4);
-  background:rgba(34,212,122,.10);
-  color:var(--green);
-  cursor:pointer;
-  transition:all .15s;
-}
-.add-btn:hover{background:rgba(34,212,122,.2);border-color:var(--green);}
-.add-btn[disabled]{opacity:.4;cursor:not-allowed;}
-.add-btn.saving{border-color:rgba(45,184,232,.4);background:rgba(45,184,232,.10);color:var(--blue);}
-.add-btn.err{border-color:rgba(224,58,58,.45);background:rgba(224,58,58,.12);color:var(--red);}
-
 /* ───────────────────────────────────────────────
    MOBILE / iPHONE FRIENDLY
    ─────────────────────────────────────────────── */
@@ -207,50 +183,6 @@ button,input{ -webkit-tap-highlight-color: transparent; }
   .rc{width:100%;margin-left:0}
   .leg{gap:10px}
 }
-
-/* ── iPhone tap target improvements ── */
-@media (max-width: 900px){
-  /* Bigger tap targets for buttons */
-  .save-btn{
-    padding:10px 16px;
-    font-size:10px;
-    min-height:36px;
-  }
-  .add-btn{
-    padding:10px 18px;
-    font-size:10px;
-    min-height:36px;
-  }
-  .chip{
-    min-height:36px;
-    display:inline-flex;
-    align-items:center;
-  }
-  .reset-btn{
-    min-height:36px;
-  }
-  /* More comfortable cell inputs */
-  .cell-inp{
-    padding:9px 10px;
-    font-size:14px; /* prevents iOS zoom on focus */
-    min-height:36px;
-    border-radius:8px;
-  }
-  /* Prevent iOS zoom on any input focus (font-size >= 16px triggers zoom) */
-  input[type="text"],
-  input[type="number"],
-  input[type="date"],
-  input[type="search"]{
-    font-size:16px !important;
-  }
-  /* Bigger table row height for easier tapping */
-  tbody td{
-    padding:12px 10px;
-  }
-  thead th{
-    padding:12px 10px;
-  }
-}
 </style>
 </head>
 <body>
@@ -264,7 +196,7 @@ button,input{ -webkit-tap-highlight-color: transparent; }
   </div>
   <div class="hdr-r">
     <div class="live"></div>
-    <span id="liveMeta">Loading…</span>
+    <span id="liveMeta">Loading…</span><span id="buildTag" style="opacity:.55">ppnl-build-2026-02-14-nyc-3</span>
     <button class="reset-btn" id="resetBtn" onclick="resetAll()">✕ Clear Selection</button>
   </div>
 </div>
@@ -331,44 +263,6 @@ button,input{ -webkit-tap-highlight-color: transparent; }
   </div>
 </div>
 
-<!-- SECTOR / CAP / BETA PANEL — shown/hidden dynamically by drawSector/drawCapBeta -->
-<div id="sectorRow" class="charts-bot" style="margin-bottom:12px;display:none">
-  <div class="panel">
-    <div class="ph">
-      <span class="pt">Sector Breakdown</span>
-      <span class="pb" style="background:rgba(45,184,232,.08);color:var(--blue)">by position value</span>
-    </div>
-    <div style="padding:12px 14px"><canvas id="cSector" height="160"></canvas></div>
-  </div>
-  <div class="panel">
-    <div class="ph">
-      <span class="pt">Cap Size &amp; Beta</span>
-      <span class="pb" style="background:rgba(154,95,224,.08);color:var(--violet)">distribution</span>
-    </div>
-    <div style="padding:12px 14px" id="capBetaPanel"></div>
-  </div>
-</div>
-<!-- NO-DATA PROMPT — shown when sector/beta not yet loaded -->
-<div id="sectorPrompt" style="
-  margin-bottom:12px;
-  background:var(--panel);
-  border:1px dashed var(--border2);
-  border-radius:8px;
-  padding:14px 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-">
-  <div style="display:flex;align-items:center;gap:10px">
-    <div style="width:7px;height:7px;border-radius:50%;background:var(--dim);flex-shrink:0"></div>
-    <span style="font-size:11px;font-family:var(--fs);color:var(--dim)">
-      Sector, cap size &amp; beta not loaded yet — run <strong style="color:var(--muted)">refreshDashboard()</strong> in Apps Script to populate
-    </span>
-  </div>
-  <span style="font-size:9px;font-family:var(--fs);font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);opacity:.6;white-space:nowrap">Sector · Cap · Beta</span>
-</div>
-
 <!-- TABLE -->
 <div class="tbl-panel">
   <div class="ph">
@@ -418,10 +312,11 @@ button,input{ -webkit-tap-highlight-color: transparent; }
 // ═══════════════════════════════════════════════
 // Global config (GitHub Pages safe)
 // IMPORTANT: define BOTH window.* and plain variables so nothing can throw "is not defined"
-var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6Szew8lvcG7fb7xxp66Zvv-ZO_TmXi5mADkfHRfefAy2xmT9RASP6Dovl9Egm1TmX/exec";
-var APPS_SCRIPT_TOKEN = "afojvbkrghreouugwhar4n8";
-window.APPS_SCRIPT_URL = APPS_SCRIPT_URL;
-window.APPS_SCRIPT_TOKEN = APPS_SCRIPT_TOKEN;
+window.APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6Szew8lvcG7fb7xxp66Zvv-ZO_TmXi5mADkfHRfefAy2xmT9RASP6Dovl9Egm1TmX/exec";
+window.APPS_SCRIPT_TOKEN = "afojvbkrghreouugwhar4n8";
+// legacy globals (some handlers may reference these)
+var APPS_SCRIPT_URL = window.APPS_SCRIPT_URL;
+var APPS_SCRIPT_TOKEN = window.APPS_SCRIPT_TOKEN;
 
 let RAW = [];
 let ROWS = [];
@@ -574,12 +469,9 @@ async function loadFromSheet(){
           if(ytd!=null && Math.abs(ytd) <= 1.5) ytd = ytd * 100; // convert decimal to %
           if(ytd==null) ytd = 0;
 
-          const ok     = toBoolFromStatus(o.status);
-          const sector = String(o.sector   || '').trim();
-          const cap    = String(o.capsize  || o['cap size'] || o.capSize || '').trim();
-          const beta   = toNum(o.beta);
+          const ok = toBoolFromStatus(o.status);
 
-          return { rowid, t, s, exp, str, con, spot, bid, ask, mid, pt, ok, ytd, sector, cap, beta };
+          return { rowid, t, s, exp, str, con, spot, bid, ask, mid, pt, ok, ytd };
         }).filter(r=>r.t);
 
         ROWS = buildRows(RAW);
@@ -613,16 +505,20 @@ async function loadFromSheet(){
   });
 }
 
+// Save edits back to Google Sheets via Apps Script Web App (doPost)
 async function saveRowEdits(rowId, updates, btn){
-  const _TOKEN = (typeof APPS_SCRIPT_TOKEN !== "undefined" ? APPS_SCRIPT_TOKEN : (window.APPS_SCRIPT_TOKEN || ""));
-  if(!rowId){ return; } // caller already showed error
+  const _URL = window.APPS_SCRIPT_URL || "";
+  const _TOKEN = window.APPS_SCRIPT_TOKEN || "";
+  if(!rowId){
+    alert("RowID missing — add RowID column in your sheet and populate it.");
+    return;
+  }
   try{
     if(btn){
       btn.disabled = true;
       btn.classList.remove('ok','err');
       btn.textContent = 'Saving…';
     }
-    const _URL = (typeof APPS_SCRIPT_URL !== "undefined" ? APPS_SCRIPT_URL : (window.APPS_SCRIPT_URL || ""));
     const res = await fetch(_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
@@ -630,19 +526,22 @@ async function saveRowEdits(rowId, updates, btn){
     });
     const json = await res.json().catch(()=>null);
     if(!res.ok) throw new Error((json && json.error) ? json.error : ('HTTP '+res.status));
+
     if(json && json.ok === false) throw new Error(json.error || 'Write failed');
-    await loadFromSheet();
+
     if(btn){
       btn.classList.add('ok');
-      btn.textContent = 'Saved ✓';
-      setTimeout(()=>{ btn.textContent='Save'; btn.classList.remove('ok'); btn.disabled=false; }, 1200);
+      btn.textContent = 'Saved';
+      setTimeout(()=>{ btn.textContent='Save'; btn.classList.remove('ok'); btn.disabled=false; }, 900);
     }
+    // Refresh from sheet for truth (simpler + avoids drift)
+    await loadFromSheet();
   }catch(err){
-    console.error('saveRowEdits error:', err);
+    console.error(err);
     if(btn){
       btn.classList.add('err');
-      btn.textContent = 'Error';
-      setTimeout(()=>{ btn.textContent='Save'; btn.classList.remove('err'); btn.disabled=false; }, 1800);
+      btn.textContent='Error';
+      setTimeout(()=>{ btn.textContent='Save'; btn.classList.remove('err'); btn.disabled=false; }, 1500);
     }else{
       alert(String(err.message||err));
     }
@@ -710,10 +609,7 @@ let sortKey='ann',sortDir=-1;
 function getSorted(){
   return getFiltered().sort((a,b)=>{
     const av=a[sortKey],bv=b[sortKey];
-    // Nulls float to TOP (newly added rows with no data yet)
-    if(av==null && bv==null) return 0;
-    if(av==null) return -1;
-    if(bv==null) return 1;
+    if(av==null)return 1;if(bv==null)return -1;
     return sortDir*(av>bv?1:av<bv?-1:0);
   });
 }
@@ -729,22 +625,12 @@ function renderStats(){
   const avgAnn=annRows.length?annRows.reduce((s,r)=>s+r.ann,0)/annRows.length:0;
   const annPrem=Math.round(annRows.reduce((s,r)=>s+r.ann*r.pv,0));
   const upCnt=rows.filter(r=>r.ytd>0).length;
-  // Portfolio beta — weighted by position value
-  const betaRows = rows.filter(r=>r.beta!=null && r.pv>0);
-  const totalBetaVal = betaRows.reduce((s,r)=>s+r.pv,0);
-  const portBeta = totalBetaVal>0
-    ? betaRows.reduce((s,r)=>s+(r.beta*r.pv),0)/totalBetaVal
-    : null;
-  const betaStr   = portBeta!=null ? portBeta.toFixed(2) : '—';
-  const betaColor = portBeta==null?'--dim':portBeta>1.2?'--orange':portBeta<0.8?'--cyan':'--green';
-  const betaSub   = portBeta!=null ? 'value-weighted' : 'run refresh to load';
-
   const cards=[
     {label:'Portfolio Value',val:'$'+(totalVal/1000).toFixed(1)+'k',sub:rows.length+' positions',a:'--blue'},
     {label:'Premium Collected',val:'$'+totalPt.toLocaleString(),sub:'upfront',a:'--green'},
     {label:'Ann Projected',val:'$'+annPrem.toLocaleString(),sub:'at current rates',a:'--violet'},
     {label:'Avg Ann Return',val:(avgAnn*100).toFixed(1)+'%',sub:'weighted by DTE',a:'--cyan'},
-    {label:'Portfolio Beta',val:betaStr,sub:betaSub,a:betaColor},
+    {label:'YTD Winners',val:upCnt+' / '+rows.length,sub:upCnt+' positive',a:'--yellow'},
   ];
   document.getElementById('stats').innerHTML=cards.map(c=>
     `<div class="sc" style="--a:var(${c.a})">
@@ -1175,7 +1061,7 @@ const COLS=[
   {k:'upfront',lbl:'Upfront%',al:'right'},
   {k:'ann',   lbl:'Ann %',   al:'right'},
   {k:'ok',    lbl:'Status',  al:'center'},
-  {k:'save',  lbl:'',        al:'center'}
+  {k:'save',  lbl:'',        al:'center'},
 ];
 
 const f$=v=>v==null?'—':'$'+Number(v).toFixed(2);
@@ -1251,19 +1137,15 @@ function renderTable(){
           const type = (c.k==='s' || c.k==='str') ? 'number' : 'text';
           const step = (c.k==='str') ? '0.5' : (c.k==='s' ? '1' : 'any');
           const placeholder = (c.k==='exp') ? 'YYYY-MM-DD' : '';
-          const inputType = (c.k==='exp') ? 'date' : (type==='number' ? 'number' : 'text');
-          const extraAttrs = (c.k==='t') ? 'autocorrect="off" autocapitalize="characters" spellcheck="false"'
-                           : (c.k==='exp') ? ''
-                           : '';
           return `<td style="text-align:${c.al}">
-            <input class="cell-inp" data-k="${c.k}" type="${inputType}" ${type==='number' ? `step="${step}"` : ''}
-              value="${String(val??'').replace(/"/g,'&quot;')}" placeholder="${placeholder}" ${extraAttrs}>
+            <input class="cell-inp" data-k="${c.k}" ${type==='number' ? `type="number" step="${step}"` : `type="text"`}
+              value="${String(val??'').replace(/"/g,'&quot;')}" placeholder="${placeholder}">
           </td>`;
         }
 
         if(c.k==='save'){
           return `<td style="text-align:${c.al}">
-            <button class="save-btn" title="Save edits to Sheet">Save</button>
+            <button class="save-btn" ${!rowid?'disabled':''} title="${rowid?'Save edits to Sheet':'Missing RowID'}">Save</button>
           </td>`;
         }
 
@@ -1297,13 +1179,26 @@ function renderTable(){
     };
   });
 
-  
+  const tV=rows.reduce((s,r)=>s+r.pv,0);
+  const tP=rows.reduce((s,r)=>s+(r.pt||0),0);
+  const aR=rows.filter(r=>r.ann);
+  const avg=aR.length?aR.reduce((s,r)=>s+r.ann,0)/aR.length:null;
+  document.getElementById('tfoot').innerHTML=COLS.map(c=>{
+    let v='';
+    if(c.k==='t')   v=rows.length+' pos';
+    if(c.k==='pv')  v='$'+(tV/1000).toFixed(1)+'k';
+    if(c.k==='pt')  v='$'+Math.round(tP).toLocaleString();
+    if(c.k==='ann') v=avg!=null?fP(avg):'—';
+    return`<td style="text-align:${c.al}">${v}</td>`;
+  }).join('');
+}
 
-  
+// ═══════════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════════
 function renderAll(){
   renderStats();
   drawBar();drawPie();drawYTD();drawOTM();drawDonut();
-  drawSector();drawCapBeta();
   renderTable();
 }
 
